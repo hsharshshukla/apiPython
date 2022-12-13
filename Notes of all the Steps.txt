@@ -565,7 +565,8 @@ if not then install
 >> How to get jenkins file from Git SCM 
  	Create a new job 
 	Add jenkinsfile in repo
-
+	change source of jenkinsfile in pipeline under section pipeline
+	Again build Now 
 
 	
 	
