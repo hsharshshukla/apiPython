@@ -1,0 +1,818 @@
+docker-compose exec backend sh
+
+docker system prune				-- this deletes all stopped containers and related data like dangling images
+
+amqps://kaannpdv:8lSAQWj9XAdKA_j3tiqI7LRiTvgh4cxj@puffin.rmq2.cloudamqp.com/kaannpdv
+
+
+Error Details Resolution
+Error 
+File "/usr/local/lib/python3.9/site-packages/flask_sqlalchemy/model.py", line 31, in __get__
+     cls, session=cls.__fsa__.session()  # type: ignore[arg-type]
+     sess = self.registry()
+   File "/usr/local/lib/python3.9/site-packages/sqlalchemy/orm/scoping.py", line 47, in __call__
+   File "/usr/local/lib/python3.9/site-packages/sqlalchemy/util/_collections.py", line 1006, in __call__
+     key = self.scopefunc()
+   File "/usr/local/lib/python3.9/site-packages/flask_sqlalchemy/session.py", line 81, in _app_ctx_id
+     return id(app_ctx._get_current_object())  # type: ignore[attr-defined]
+   File "/usr/local/lib/python3.9/site-packages/werkzeug/local.py", line 513, in _get_current_object
+     raise RuntimeError(unbound_message) from None
+ RuntimeError: Working outside of application context.
+ 
+ Resolution 
+	use app.app_context().push() , this makes app global variable and you can use this to access db in different python file or python app i.e. .py
+	
+
+uvicorn main:app
+
+pip install passlib[brcrypt]
+
+pip install python-jose[cryptography]
+
+http://localhost:8000/docs
+http://localhost:8000/redoc
+
+
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMCwiZXhwIjoxNjcwNTA4MzI5fQ.ScywkK8ecc9azQBQjLaiQB9EP_MsCSBbLx9lBK9B-CE",
+  "token_type": "bearer"
+}
+
+
+alembic revision - m "message"
+alembic upgrade head 
+alembic upgrade +2
+alembic downgrade -1 
+alembic downgrade <revision id>
+
+
+fetch('http://localhost:8000/').then(res => res.json()).then(console.log)
+
+
+echo "# apiPython" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/hsharshshukla/apiPython.git
+git push -u origin main
+
+
+Install heroku
+heroku --version
+heroku login 
+heroku create fastapi-harsh		#this will create app fastapi-harsh in heroku 
+	goto https://dashboard.heroku.com/apps u will see fastapi-harsh created
+
+git remote 
+	>> heroku # created by heroku 
+	>> origin 
+	
+git push heroku main # this will push code to heroku i.e. main branch to heroku
+	# this will also generate application url where we can access applicaiton similar to localhost:8000
+
+Now give command to run app to heroku by creating Profile file under fastapi folder 
+
+Profile
+	
+	web:uvicorn app.main:app --host=0.0.0.0 --port=${PORT: -5000}
+	
+
+Now push profile to git 
+
+git add --all
+
+git commit -m "added profile file "
+
+git push origin main 	# will push changes to github 
+
+git push heroku main    # will push changes to heroku
+
+
+to access logs on heroku 
+
+heroku logs or heroku logs -t 
+
+Create postgres instance on heroku 
+	heroku addons:create heroku-postgresql:<herokuplan>		#this will create postgresql instance on heroku
+		this will also create db credentials, port etc 
+	
+	
+setup env variables in heroku APPLICAITON for postgresql db , secret key etc 
+	goto applicaiton > settings > set env variable
+	
+	DATABASE_URL = .....(as per above details)
+	DATABASE_HOSTNAME = Herokupostgresqlhostname
+	DATABASE_PORT  = HerokupostgresqlPORT
+	DATABASE_USERNAME = HerokupostgresqlUsername
+	DATABASE_PASSWORD = HerokupostgresqlPASSWORD
+	DATABASE_NAME = HerokupostgresqlName
+	SECRET_KEY = 
+	ALGORITHM = 
+	ACCESS_TOKEN_EXPIRE_MINUTES = 
+
+
+NOW Restart app
+	heroku ps:restart
+	
+	heroku logs  #check if any issue or not 
+	
+	heroku apps 
+	heroku apps:info fastapi-harsh
+	
+	heroku app url/docs 	# swagger api docs 
+	
+	try creating user 
+		
+	heroku logs -t 
+	
+Because tables are not created so we need alembic to create tables 
+
+Never to run alembic revision on prod its only in dev 
+so for production 
+
+		alembic upgrade head
+		
+	in heroku 
+		heroku run "alembic upgrade head"		# this will upgrade to final version with all details as in dev so we upgrade/downgrade if needed
+		
+		heroku ps:restart
+		
+		check app url again 
+		
+	try creating user with api 
+	all works now 
+	
+	
+update db details in pgadmin to see tables and data 
+
+
+git add --all
+git commit -m "added changes "
+git push origin main
+
+git push heroku main 
+
+check app url again 
+
+
+Digital Ocean Deployment - Ubuntu deployment for production
+
+Create droplets 
+	choose plan 
+	select data center 
+	
+open cmd 
+ssh root@ipaddresdigitalocean
+	enter password setup during droplet creation
+	
+update all packages on ubuntu 
+	sudo apt update && sudo apt upgrade -y 
+	
+		if popup select -> keep local version .....
+		
+		python --version 
+		
+		pip --version 
+			pip3 --version 
+		
+		or sudo apt install python3-pip
+		
+		sudo pip3 install virtualenv 
+		sudo apt install postgresql postgresql-contrib  -y
+		
+		lets connect postgresql 
+			psql --version 
+			psql --help 
+			
+			postgresql authenticates only logged in local users working on ubuntu and not in command like below 
+				psql -U postgres # this wont work 
+			
+			sudo cat /etc/passwd -> list of all users 
+			su -postgres 
+				now run "psql -U postgres"
+				
+			now we can remove above method of authentication and allow remote authentication
+				\password postgres
+					enter 
+					enter again 
+					
+				exit 
+				
+			cd /etc/postgresql/<version>/main 
+			
+			
+			sudo vi postgresql.conf 
+				goto Connection and authentication
+					
+					add listen_addresses = '*'  # this will allow all ips to access db 
+			
+			sudo vi pg_hba.conf
+				goto Database administrative login 
+				
+					local all postgres 	md5 			# replace peer with md5 
+				
+				goto "local" is for Unix domain socket connections only 
+				
+					local all all		md5				# replace peer with md5
+				
+				goto ipv4 local connections 
+					host all 	all 	0.0.0.0/0 	md5
+					
+				
+				goto ipv6 local connections 
+					host all 	all 	::/0 		md5
+					
+					
+			
+				
+			systemctl restart postgresql  #after making above changes 
+			
+			psql -U postgres
+				enter password			# this works as per above changes 
+				
+			Connect db from pgadmin from local laptop 
+			
+			create user to access service 
+			
+				adduser harsh 
+					enter password 
+					again 
+					
+			su -harsh 		# in ubuntu shell 
+			
+			or from cmd on local laptop 
+				ssh harsh@ipaddresdigitalocean
+				enter password 
+				
+				exit 
+				
+			login as root 
+				usermod -aG sudo harsh 		# this willhelp harsh to do sudo command 
+				
+			login with harsh 
+				sudo apt upgrade 	# to check if sudo allowed 
+				
+			cd ` 		#home directory 
+			
+			mkdir  app 
+			cd app
+			
+			virtualenv venv		# creates venv 
+			
+			cd venv/bin/
+			
+			source activate 	# activates venv
+			deactivate 
+			
+			in app folder 
+				mkdir src 
+				cd src 
+				
+				
+			goto github > apiPython > code > clone > copy https url 
+				
+			under src folder on ubuntu
+				git clone <https url to repo> . # this will clone repo under src folder from github
+				
+			activate venv 
+			
+			cd src 
+			pip install -r requirements.txt 		# this will install all dependencies 
+				might face issues like libraries missing so install them as below 
+				
+			deactivate 
+			sudo apt install <lib name which is missing or giving error >
+			
+			activate venv 
+			cd src 
+			pip install -r requirements.txt 
+			
+			Setup env variables 
+				printenv		# prints all env 
+				
+				
+			cd `     # home directory
+			
+			ls 
+			vi .env 
+				add all env variable in this file  as below 
+				
+				DATABASE_HOSTNAME=localhost
+				DATABASE_PORT=5432
+				DATABASE_PASSWORD=harsh 
+				DATABASE_NAME=fastapi
+				DATABASE_USERNAME=postgres
+				SECRET_KEY = 
+				ALGORITHM = HS256
+				ACCESS_TOKEN_EXPIRE_MINUTES=30
+		
+			set -o allexport; source /home/harsh/.env; set +o  allexport 		# this will set all env variables
+			
+			now if we reboot then all will be unset 
+			
+			cd `
+			
+			vi profile
+					goto bottom of file 
+					set -o allexport; source /home/harsh/.env; set +o  allexport	# this will set in profile file so whenever reboot happens this will renable all
+			
+			reboot and check 
+			
+			activate venv 
+			
+			cd src 
+			ls 
+			alembic upgrade head 		# this will setup all db tables and other updates 
+			
+			uvicorn --host:0.0.0.0 app.main:app # this will help in listening from any source 
+			
+			try accessing ipaddresdigitalocean:8000 
+			
+			
+			GUNICORN  - process manager to handle restarting app in case of reboot etc 
+			
+			pip install gunicorn 
+			
+			pip install httptools 
+			pip install uvtools 
+			
+			gunicorn --help 
+			gunicorn -w 4			# w = workers in case of multithread system 
+			
+			gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:8000
+				might get uvloop error , install this 	pip isntall uvloop 
+				
+			
+			pip freeze > requirements.txt 		# this will generate new requirements file and update other systems and deploy all at once 
+			
+			ps -aef | grep -i gunicorn 		# this will display all workers 
+			
+			appurl/docs		# swagger api docs 
+			
+		  
+		Setup Automatically run gunicorn on reboot 
+			
+			create a custom service 
+			
+			cd /etc/systemctl/system 
+				list of all services on system 
+			
+			create service as below 
+				create file gunicorn.service 		in vscode near gitignore file in main fastapi directory
+					
+			cd /etc/systemd/system/
+			
+			sudo vi api.service  # service name api 
+			
+			copy from gunicorn.service to api.service
+			
+			
+			
+			systemctl start api 		# to start api 
+			
+			systemctl status api 	# will show status of api 
+			
+			
+			try opening app url ip:8000
+			
+			Enable to automatic reboot application start 
+			
+			sudo systemctl enable api 	# this will enable automatic start of service 
+			
+			
+			
+NGINX 
+	At present 
+		url > request to unicorn 
+		
+	After nginx 
+		url > nginx > gunicorn
+	
+	nginx - web server (acts as proxy) 
+		SSL termination i.e. https url requests nginx and then nginx transforms and sends normal http request to internal api 
+		
+	
+	
+	sudo apt install nginx  -y 
+	
+	systemctl start nginx 
+		open ipaddresdigitalocean in browser nginx home page opens 
+		
+		
+	cd /etc/nginx/sites-available/
+	vi default 		# default configuration 
+	
+	copy location values from nginx file to location in default 
+	
+	system restart  nginx 
+	
+	open nginx url this should now show main app 
+	
+	Setup cname, and other site settings 
+	
+SSL SETUP  
+	www.certbot.eff.org 
+	
+	follow instructions 
+	
+	sudo apt install snapd 
+	
+	snap --version 
+	
+	sudo apt install --classic certbot
+	
+	sudo certboot --nginx   # this will setup nginx for ssl 
+			or u can generate ssl certificate but we will use above option 
+			
+	open url it willshow https 
+	
+	systemctl status nginx 
+	
+	systemctl enable nginx 	# will enable for automatic start after reboot 
+	
+Setup firewall
+	sudo ufw status 
+	
+	sudo ufw allow http 
+	
+	sudo ufw allow https
+
+	sudo ufw allow ssh 
+		
+	sudo ufw allow 5432 		# to allow postgres or pgadmin access  and mostly not allowed in production 
+	
+	sudo ufw enable 
+	
+	sudo ufw status 
+	
+	
+	
+	to delete rule 
+		for e.g. 	sudo ufw delete allow 5432 
+	
+	
+	
+Move changes to PRODUCTION
+	make change 
+	
+	git add --all 
+	
+	git commit -m "change details "
+	
+	git push origin main 	# to push chagne to github 
+	
+	Goto application folder 
+		git pull 	# this will pull all changes to production system 
+		
+		systemctl restart api 
+ 
+	
+>>>> CI & CD 
+MAKE changes to code > Submit Code > CI steps > CD Steps 
+CI & CD are automated by tools such as Jenkins, Travis CI, Circle CI, Github actions 
+CI Steps =  Pull Source Code> Install dependencies> Run Automated Tests > Build Images 
+CD Steps =  Takes new image or code > update production 
+	
+Download Jenkins -> jenkins.war
+
+java -jar jenkins.war or java -jar jenkins.war --httpPort=8100	# latter in case u want different port 
+
+copy password generated while runnign above command or at below path 
+			c:\users\administrator\.jenkins\secrets\initialAdminPassword
+
+open url localhost:<port> 
+enter password copied earlier 
+choose > Select plugins to install 
+click install with default selected options 
+this will run for 10-15 mins 
+now update first admin user details 
+
+click start jenkins to start jenkins 
+
+home directory - "C:\Users\Harsh\.jenkins"  # all data , config, details are present here 
+
+>> To change home directory 
+Create a new folder 
+Copy data from home directory to new folder 
+Create/Edit -in case of war installation update/create Environment variable "JENKINS_HOME" to change home directory
+			 in case of windows services installation goto program files > jenkins folder > change JENKINS_HOME in jenkins.xml file
+
+Restart service - if installed as windows then do url "localhost:<port>/restart" or if installed as war then ctrl+c on cmd and then run "java -jar jenkins.war --httpPort=<port>"
+
+>> Setup Git on jenkins 
+goto manage jenkins > manage plugins >installed plugins >  check git plugin installed 
+if not then install 
+
+
+>> Create a job in jenkins 
+
+>> Connect with github repo 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+				
+			
+	
+				
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
