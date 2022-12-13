@@ -566,8 +566,25 @@ if not then install
  	Create a new job 
 	Add jenkinsfile in repo
 
+>>Branch in Git 
+git branch "mynewbranch"	# created new branch
 
-	
+git checkout mynewbranch	# switched to new branch 
+git status					# this will show new branch
+create a file test.txt 
+git add .
+git commit -m "added file test.txt in mynewbranch"
+git push -u origin mynewbranch	# this will push new branch to github 
+this new file will not be available to main branch. 
+
+git checkout main 	# switched to main branch
+git status 			# this will show main branch
+
+>>Merge new branch to main branch
+	git checkout main 
+	git status			# to confirm we are in main 
+
+	git merge mynewbranch
 	
 	
 	
