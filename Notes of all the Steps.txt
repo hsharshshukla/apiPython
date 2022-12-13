@@ -508,9 +508,65 @@ if not then install
 >> Create a job in jenkins 
 
 >> Connect with github repo 
-	
-	
-	
+	manage jenkins > credentials > stores scoped to jenkins > global > Add credentials
+	Select username and password 
+	add github username and password > click save 
+
+	dashboard > Job > Configure > Source code management > Git 
+	enter repo url 
+	credentials > select credentials created in above step 
+	Branch > enter main 
+	click apply & save 
+
+	dashboard > job > Build Now 
+	check job details 
+	if successfull > goto JENKINS_HOME > workspace > Job > <all files from project will appear here >
+
+>> Jenkins CLI  - Faster , easier, and good to integrate 
+	goto localhost:<port>/cli 
+	download jenkins-cli.jar
+
+	java -jar jenkins-cli.jar -s http://localhost:8080/ build TestJob 	
+
+	>> Create User, manage, Assign Roles 
+	 from dashboard> jenkins manage > manage users > create users 
+
+	 manage jenkins > manage plugins > available > Role-based Authorization Strategy > install without restart 
+
+	manage jenkins > global security > Authentication > Authorization> Select Role-Based Strategy > save 
+
+	manage jenkins > Manage and Assign roles 
+
+>> Chain Jobs 
+    goto First job BuildJob(for e.g.) > Configure > Post Build Steps > Select Build Other projects > enter job name(for e.g. Devjob) to be run after build job 
+	goto Dev Job > Configure > Post Build Steps > select build other projects > enter Test Job name 
+
+	Run Build job > once build job completes it will Automatically start dev job > once dev job completes it will Automatically start Test job 
+
+>> CREATING PIPELINE 
+	manage jenkins > manage plugins > available > Build PIPELINE > install 
+	dashboard > BuildPipeline 
+
+	BuildPipeline > Configure > 
+			Pipeline flow > initial job > buildjob 
+			Display options > no of displayed builds = 5 , this will show tile view 
+
+>> Jenkins Pipeline  or Jenkins	File 
+	Build > Deploy > Test > Release 
+	Jenkins File is called Pipeline as a Code
+
+	Start jenkins 
+	install pipeline plugin 
+	Create a new Job(PIPELINEOne) of type Pipeline
+	Create/Get jenkins file in pipeline section 
+
+	Run and check 
+
+>> How to get jenkins file from Git SCM 
+ 	Create a new job 
+	Add jenkinsfile in repo
+
+
 	
 	
 	
