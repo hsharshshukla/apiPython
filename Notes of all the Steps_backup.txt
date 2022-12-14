@@ -565,14 +565,9 @@ if not then install
 >> How to get jenkins file from Git SCM 
  	Create a new job 
 	Add jenkinsfile in repo
-<<<<<<< HEAD
 
 >>Branch in Git 
 git branch "mynewbranch"	# created new branch
-=======
-	change source of jenkinsfile in pipeline under section pipeline
-	Again build Now 
->>>>>>> mynewbranch
 
 git checkout mynewbranch	# switched to new branch 
 git status					# this will show new branch
